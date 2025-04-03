@@ -1,4 +1,0 @@
-# MONGO_URI = mongodb+srv://nitishmohanty1:epD1P5ki9jwxocX8@taskmanager.5nphb8g.mongodb.net/?retryWrites=true&w=majority&appName=taskManager
-MONGO_URI = mongodb://127.0.0.1:27017/taskmanager;
-JWT_SECRET=78e3fe7ad06ed96fd978bd71efb092ce8ca904f633b4686a3c0b36516194dcf30357f1691cf47da964e8d5eab6078224edf1090ba703294374280e489af547aa
-PORT = 8000;
