@@ -37,35 +37,36 @@ const getTasks = async (req, res) => {
 
     //Status summary count
     const allTasks = await Task.countDocuments(
-      req.user.role === "admin" ? {} : {assignedTo:req.user._id}
+      req.user.role === "admin" ? {} : { assignedTo: req.user._id }
     );
 
     const pendingTasks = await Task.countDocuments({
       ...filter,
-      status:"Pending",
-      ...(req.user.role !== "admin" && {assignedTo: req.user._id})
+      status: "Pending",
+      ...(req.user.role !== "admin" && { assignedTo: req.user._id }),
     });
 
     const inProgressTask = await Task.countDocuments({
       ...filter,
-      status:"Progress",
-      ...(req.user.role !== "admin" && {assignedTo: req.user._id})
+      status: "Progress",
+      ...(req.user.role !== "admin" && { assignedTo: req.user._id }),
     });
 
     const completedTask = await Task.countDocuments({
       ...filter,
-      status:"Completed",
-      ...(req.user.role !== "admin" && {assignedTo: req.user._id})
+      status: "Completed",
+      ...(req.user.role !== "admin" && { assignedTo: req.user._id }),
     });
 
     res.json({
-      tasks,statusSummary:{
-        all:allTasks,
+      tasks,
+      statusSummary: {
+        all: allTasks,
         pendingTasks,
         inProgressTask,
-        completedTask
-      } 
-    })
+        completedTask,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -76,6 +77,13 @@ const getTasks = async (req, res) => {
 //@access   Private
 const getTaskById = async (req, res) => {
   try {
+    const task = await Task.findById(req.params.id).populate(
+      "assignedTo",
+      "name email profileImageUrl"
+    );
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+    res.json(task);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -122,6 +130,28 @@ const createTask = async (req, res) => {
 //@access   Private
 const updateTask = async (req, res) => {
   try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    task.title = req.body.title || task.title;
+    task.description = req.body.description || task.description;
+    task.priority = req.body.priority || task.priority;
+    task.dueDate = req.body.dueDate || task.dueDate;
+    task.todoCheckList = req.body.todoCheckList || task.todoCheckList;
+    task.attachments = req.body.attachments || task.attachments;
+
+    if (req.body.assignedTo) {
+      if (!Array.isArray(req.body.assignedTo)) {
+        return res
+          .status(400)
+          .json({ message: "assigned to must be an array of User IDs" });
+      }
+      task.assignedTo = req.body.assignedTo;
+    }
+
+    const updatedTask = await task.save();
+    res.json({ message: "Task updated successfully", updatedTask });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -132,6 +162,12 @@ const updateTask = async (req, res) => {
 //@access    Private(Admin)
 const deleteTask = async (req, res) => {
   try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    await task.deleteOne();
+    res.json({ message: "Task deleted Successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -142,6 +178,27 @@ const deleteTask = async (req, res) => {
 //@access    private
 const updateTaskStatus = async (req, res) => {
   try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    const isAssigned = task.assignedTo.some(
+      (userId) => userId.toString() === req.user._id.toString()
+    );
+
+    if (!isAssigned && req.user.role !== "admin") {
+      return res.status(403).json({ message: "Not Authorized" });
+    }
+
+    task.status = req.body.status || task.status;
+
+    if (task.status == "Completed") {
+      task.todoCheckList.forEach((item) => (item.completed = true));
+      task.progress == 100;
+    }
+
+    await task.save();
+    res.json({message:"Task status updated",task});
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
