@@ -31,6 +31,13 @@ const Login = () => {
             placeholder="jhon@example.com"
             type="text"
           />
+          <Input
+            vlaue={password}
+            onChange={({ target }) => setPassword(target.password)}
+            label="Password"
+            placeholder="Min 8 Characters"
+            type="password"
+          />
         </form>
       </div>
     </AuthLayout>
