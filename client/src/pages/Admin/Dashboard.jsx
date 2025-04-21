@@ -9,6 +9,7 @@ import moment from "moment";
 import InfoCard from "../../components/Cards/InfoCard";
 import { addThousandSeparators } from "../../utils/helper";
 import { LuArrowRight } from "react-icons/lu";
+import TaskListTable from "../../components/TaskListTable";
 
 const Dashboard = () => {
   useUserAuth();
@@ -35,6 +36,10 @@ const Dashboard = () => {
   useEffect(() => {
     getDashboardData();
   }, []);
+
+  const onSeeMore =() => {
+    navigate('/admin/tasks')
+  }
 
   return (
     <DashboardLayout activeMenu="Dashboard">
@@ -90,12 +95,12 @@ const Dashboard = () => {
                   <h5 className="text-lg">Recent Tasks</h5>
                   <button
                   className="card-btn" 
-                 // onClick={seeMore}
+                  onClick={onSeeMore}
                   >
                     See All<LuArrowRight className="text-base"/>
                   </button>
                 </div>
-
+                <TaskListTable tableData = {dashboardData?.recentTasks || []} />
               </div>
             </div>
       </div>
