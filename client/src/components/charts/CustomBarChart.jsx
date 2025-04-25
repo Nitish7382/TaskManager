@@ -55,7 +55,7 @@ const CustomBarChart = ({ data }) => {
             dataKey="priority"
             tick={{ fontSize: 12, fill: "#555" }}
             stroke="none"
-          />
+            />
           <YAxis tick={{ fontSize: 12, fill: "#555" }} stroke="none" />
           <Tooltip content={CustomToolTip} cursor={{ fill: "transparent" }} />
           <Bar
