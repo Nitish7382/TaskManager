@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LuTrash2 } from "react-icons/lu";
+import { PRIORITY_DATA } from "../../utils/data";
+import SelectDropDown from "../../components/Inputs/SelectDropDown";
+import SelectUsers from "../../components/Inputs/SelectUsers";
 
 const CreateTask = () => {
   const location = useLocation();
@@ -21,7 +24,7 @@ const CreateTask = () => {
   const [currentTask, setCurrentTask] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [openDeleteAlert, setopenDeleteAlert] = useState(false);
+  const [openDeleteAlert, setOpenDeleteAlert] = useState(false);
 
   const handleValueChange = (key, value) => {
     setTaskData((prevData) => ({ ...prevData, [key]: value }));
@@ -66,7 +69,7 @@ const CreateTask = () => {
               {taskId && (
                 <button
                   className="flex items-center gap-1.5 text-[13px] font-medium text-rose-500 bg-rose-50 rounded px-2 py-1 border border-rose-100  hover:border-rose-500 cursor-pointer"
-                  onClick={() => setopenDeleteAlert(true)}
+                  onClick={() => setOpenDeleteAlert(true)}
                 >
                   <LuTrash2 className="text-base" /> Delete
                 </button>
@@ -87,7 +90,9 @@ const CreateTask = () => {
               />
             </div>
             <div className="mt-3">
-              <label className="text-xs font-medium text-slate-600">Description</label>
+              <label className="text-xs font-medium text-slate-600">
+                Description
+              </label>
 
               <textarea
                 placeholder="Describe Task"
@@ -98,6 +103,47 @@ const CreateTask = () => {
                   handleValueChange("description", target.value)
                 }
               />
+            </div>
+
+            <div className="grid grid-cols-12 gap-4 mt-2">
+              <div className="col-span-6 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
+                  Priority
+                </label>
+                <SelectDropDown
+                  options={PRIORITY_DATA}
+                  value={taskData.priority}
+                  onChange={(value) => handleValueChange("priority", value)}
+                  placeholder="Select Priority"
+                />
+              </div>
+
+              <div className="col-span-6 md:col-span-4">
+                <label className="text-xs font-medium text-slate-600">
+                  Due Date
+                </label>
+
+                <input 
+                placeholder="Create UI App"
+                className="form-input"
+                value={taskData.dueDate}
+                onChange={({target}) => 
+                  handleValueChange("dueDate", target.value)
+                }
+                type="date"
+                />
+              </div>
+
+              <div className="col-span-12 md:col-span-3">
+                <label className=" text-xs font-medium text-slate-600">Assign To</label>
+
+                <SelectUsers
+                selectedUsers = {taskData.assignedTo}
+                setSelectedUser= {(value) => {
+                  handleValueChange("assignedTo", value)
+                }}
+                />
+              </div>
             </div>
           </div>
         </div>
