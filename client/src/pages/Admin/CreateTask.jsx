@@ -5,6 +5,7 @@ import { LuTrash2 } from "react-icons/lu";
 import { PRIORITY_DATA } from "../../utils/data";
 import SelectDropDown from "../../components/Inputs/SelectDropDown";
 import SelectUsers from "../../components/Inputs/SelectUsers";
+import TodoListInput from "../../components/Inputs/TodoListInput";
 
 const CreateTask = () => {
   const location = useLocation();
@@ -145,6 +146,18 @@ const CreateTask = () => {
                 />
               </div>
             </div>
+            <div className="mt-3">
+                <label className="text-xs font-medium text-slate-600">
+                  TODO CheckList
+                </label>
+
+                <TodoListInput
+                todoList={taskData?.todoCheckList}
+                setTodoList ={(value) => 
+                  handleValueChange("todoCheckList", value)
+                }
+                />
+                </div>
           </div>
         </div>
       </div>
